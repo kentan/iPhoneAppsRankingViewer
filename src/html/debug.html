@@ -1,0 +1,66 @@
+
+<html>
+   <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	
+	<link rel='stylesheet' href='http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css' />
+	<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
+<!-- 
+	<script src="http://code.jquery.com/mobile/1.2.0-alpha.1/jquery.mobile-1.2.0-alpha.1.min.js"></script>
+-->
+    <title>Word Enrollment</title>
+    <script>
+	    $(document).ready(function() {
+			function getTableData(tableName){
+		            $.ajax({
+		     		   type: "GET",
+		     		   url: "/icon_getter.py",
+		     		   dataType: 'text',
+		     		   data: "mode=getXXXX&table="+ tableName +"&de=getTopFreeApps",
+		     		   success: function(msg){
+			     		   //alert(msg);
+							$('#appList').append(msg);
+							$('#appList').trigger('create');
+	//						$('#newlyFoundAppList').listview('refresh');
+		         	   },
+		 		   	   error: function(XMLHttpRequest, textStatus, errorThrown){
+		      			 alert("error" + textStatus + errorThrown);
+		     		   }
+		     	});
+			}
+			$('#tableList').change(function(e){
+				$('#appList > ul').remove();
+				var selectedTable = this.value;
+				getTableData(selectedTable);
+			});
+
+	    });
+    </script>
+  </head> 
+  <body>
+ 		<div data-role="header" data-theme="f">
+			<h1>Top Free Apps Hitory</h1>
+			<a href="#page_book_select" data-icon="home" data-iconpos="notext" data-direction="reverse">Home</a>
+			<a href="../nav.html" data-icon="search" data-iconpos="notext" data-rel="dialog" data-transition="fade">Search</a>
+		</div><!-- /header -->	
+		<div data-role="content">
+			<div data-role="fieldcontain">
+				<label for="select-choice-3" class="select" >Type</label>
+				<select  id="tableList" data-native-menu="false">
+					<option value="topFree">Top Free</option>
+					<option value="topPaid">Top Paid</option>
+					<option value="topGrossing">Top Grossing</option>
+					<option value="topFreeIpad">Top Free Ipad</option>
+					<option value="topPaidIpad">Top Paid Ipad</option>
+					<option value="topGrossingIpad">Top Grossing Ipad</option>
+					<option value="new">New Apps</option>					
+					<option value="newFree">New Free Apps</option>					
+					<option value="newPaid">new Paid Apps</option>
+				</select>
+			</div>  
+			<div id="appList"/>
+		</div><!-- content -->	
+  </body>
+</html>

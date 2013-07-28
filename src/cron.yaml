@@ -1,0 +1,5 @@
+cron:
+- description: daily croll
+  url: /main.py?mode=croll
+  schedule: every day 02:10
+

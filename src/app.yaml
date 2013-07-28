@@ -1,0 +1,14 @@
+application: simdott02
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /main.py
+  script : main.py
+
+- url: /html
+  static_dir : html
+ 
+- url: .*
+  script : redirector.py
