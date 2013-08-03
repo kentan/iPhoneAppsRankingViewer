@@ -1,5 +1,5 @@
 cron:
-- description: daily croll
-  url: /main.py?mode=croll
+- description: daily crawl
+  url: /main.py?mode=crawl
   schedule: every day 02:10
 

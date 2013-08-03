@@ -22,23 +22,23 @@ class AppEntry(db.Model):
     date = db.DateProperty();
 
 class AppEntryTopFree(AppEntry):
-    dummy = "";
+    name = "AppEntryTopFree";
 class AppEntryTopPaid(AppEntry):
-    dummy = "";
+    name = "AppEntryTopPaid"
 class AppEntryTopGrossing(AppEntry):#top sales
-    dummy = "";
+    name = "AppEntryTopGrossing";
 class AppEntryTopFreeIpad(AppEntry):
-    dummy = "";  
+    name = "AppEntryTopFreeIpad";
 class AppEntryTopPaidIpad(AppEntry):
-    dummy = "";   
+    name = "AppEntryTopPaidIpad";
 class AppEntryTopGrossingIpad(AppEntry):
-    dummy = "";    
+    name = "AppEntryTopGrossingIpad";
 class AppEntryNew(AppEntry):
-    dummy = "";
+    name= "AppEntryNew";
 class AppEntryNewFree(AppEntry):
-    dummy = "";
+    name = "AppEntryNewFree";
 class AppEntryNewPaid(AppEntry):
-    dummy = "";
+    name = "AppEntryNewPaid";
     
 class AppEntryTop20Holder(db.Model):
     title = db.StringProperty();

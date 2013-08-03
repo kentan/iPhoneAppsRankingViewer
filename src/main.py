@@ -20,7 +20,7 @@ import random
 class MainPage(webapp.RequestHandler):
     def get(self):
         mode = self.request.get("mode")
-        if(mode == "croll") :
+        if(mode == "crawl") :
             recodedDate = datetime.date.today();
             sourceEntry = model.SourceEntry(date = recodedDate);
             for key in model.AppDef.urls.keys():
@@ -93,7 +93,7 @@ class MainPage(webapp.RequestHandler):
             q.order("-date")
             q.filter("rank =", 0)
 
-            results = q.fetch(100);
+            results = q.fetch(30);
             htmlString = "";
             htmlString += '<ul data-role="listview" data-inset="true">'
             for entry in results:
@@ -145,7 +145,7 @@ class MainPage(webapp.RequestHandler):
             for index in range(0,100):
                 dummyString = "dummy" + str(index);
 
-                dummyRank = random.randint(1,10);
+                dummyRank = random.randint(0,10);
                 dummyDate = datetime.date(2013, 3, random.randint(1,31))
                 q = entity(title=dummyString,rank=dummyRank,desc=dummyString,date=dummyDate,url="http://google.com",iconUrl="http://a2.mzstatic.com/us/r1000/077/Purple/v4/c2/4f/29/c24f29f4-8d24-b345-7609-085e15a06805/mzl.junlfvwk.png");
                 q.put();                                    

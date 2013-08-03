@@ -30,15 +30,30 @@ indexes:
 
 - kind: AppEntryTopFree
   properties:
+  - name: date
+  - name: rank
+
+- kind: AppEntryTopFree
+  properties:
   - name: rank
   - name: date
     direction: desc
 
 - kind: AppEntryTopFreeIpad
   properties:
+  - name: date
+  - name: rank
+
+- kind: AppEntryTopFreeIpad
+  properties:
   - name: rank
   - name: date
     direction: desc
+
+- kind: AppEntryTopGrossing
+  properties:
+  - name: date
+  - name: rank
 
 - kind: AppEntryTopGrossing
   properties:

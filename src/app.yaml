@@ -9,6 +9,11 @@ handlers:
 
 - url: /html
   static_dir : html
+
+- url: /ViewDataCreator
+  script : view_data_creator.py
  
 - url: .*
   script : redirector.py
+  
+  
