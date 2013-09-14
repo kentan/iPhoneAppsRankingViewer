@@ -10,7 +10,7 @@ from google.appengine.ext import db
 
 import model
 import datetime
-
+import zlib
 
 class ViewDataCreator(webapp.RequestHandler):
     def get(self):
@@ -58,16 +58,42 @@ class ViewDataCreator(webapp.RequestHandler):
                 if entry.iconUrl == None or str(entry.iconUrl) == "http://localhost":
                     continue;
                 htmlString += '<li>'
-                htmlString += '<a href="' + str(entry.url) + '" target="_blank">'
+#                htmlString += '<a href="' + str(entry.url) + '" target="_blank">'
+                htmlString += '<a href="chart.html?appName=' + entry.title + '" target="_blank">'
                 htmlString += '<img src="' + str(entry.iconUrl) + '" />'
-                htmlString +=  '<p><h3>' + str(entry.rank + 1) +' . '+ entry.title +'</h3></p>'
-#                htmlString +=  '<p>' + entry.title + '</p>'
-                htmlString +=  '<p>' + entry.desc + '</p>'
+                htmlString +=  '<p><h3 class="title">' + str(entry.rank + 1) +' . '+ entry.title +'</h3></p>'
+                htmlString +=  '<p class="desc">' + entry.desc + '</p>'
                 htmlString +=  '</a>'
                 htmlString += '</li>'
             htmlString += '</ul>'
 
             self.response.out.write(htmlString);  
+        elif mode == "getChartData":
+            self.getChartData();
+                        
+    def getChartData(self):
+        searching_app_name = self.request.get("appName")
+        q = model.RankHistory.all();
+        q.filter("appId", int(searching_app_name));
+        results = q.fetch(1);
+        
+        if len(results) == 0:
+            return "{}";
+        
+        entry = results[0];
+        
+        rv = '{';
+        for key in model.AppDef.urls.keys():
+            compressed = getattr(entry,key);
+            if compressed == None:
+                continue;
+            data = zlib.decompress(compressed);
+ 
+            rv += ('"' + key + '":"' + data + '",');
+        rv = rv[0:len(rv) - 1];
+        rv += "}"
+        self.response.out.write(rv); 
+
 
 application = webapp.WSGIApplication([('/.*', ViewDataCreator)], debug=True)
                 

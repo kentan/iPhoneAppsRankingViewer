@@ -15,7 +15,7 @@ import urllib2
 import datetime
 import model
 import random
-
+import zlib
 
 class MainPage(webapp.RequestHandler):
     def get(self):
@@ -61,6 +61,11 @@ class MainPage(webapp.RequestHandler):
 #                                        iconGetter = icon_getter.IconGetter();
 #                                        iconUrl = iconGetter.getIcon(url);
 #                                        iconUrl = "http://localhost";#TODO
+                                        imid = n2.attributes['im:id'].value;
+                                        rank_coded = model.rankCode[rank];
+                                        
+                                        self.appendToRankHistory(imid, key, rank_coded);
+                                        
                                         isUrlDone = True;
                                     elif n2.nodeName == "summary":
                                         desc = n2.firstChild.data;                                  
@@ -113,15 +118,15 @@ class MainPage(webapp.RequestHandler):
             self.response.out.write(htmlString);    
 
             
-        elif mode == "putDummyData":
-            dbName = self.request.get("db")
-            entity = model.AppDef.dbModels.get(dbName);
-            self.putDummyDataToDB(entity);
-        elif mode =="get":
-            q = model.AppEntry.all();
-            results = q.fetch(1000);
-            for entry in results:
-                self.response.out.write(entry.title + "</br>");
+#        elif mode == "putDummyData":
+#            dbName = self.request.get("db")
+#            entity = model.AppDef.dbModels.get(dbName);
+#            self.putDummyDataToDB(entity);
+#        elif mode =="get":
+#            q = model.AppEntry.all();
+#            results = q.fetch(1000);
+#            for entry in results:
+#                self.response.out.write(entry.title + "</br>");
 
 #        elif mode == "delete":
 #            for inst in model.AppDef.dbModels.values():
@@ -139,16 +144,44 @@ class MainPage(webapp.RequestHandler):
         if(len(result) == 0):
             newlyFoundApp = model.NewlyFoundApp(title = title,date = date,url=url,iconUrl=iconUrl);
             newlyFoundApp.put();
-    
-    def putDummyDataToDB(self,entity):
-            
-            for index in range(0,100):
-                dummyString = "dummy" + str(index);
 
-                dummyRank = random.randint(0,10);
-                dummyDate = datetime.date(2013, 3, random.randint(1,31))
-                q = entity(title=dummyString,rank=dummyRank,desc=dummyString,date=dummyDate,url="http://google.com",iconUrl="http://a2.mzstatic.com/us/r1000/077/Purple/v4/c2/4f/29/c24f29f4-8d24-b345-7609-085e15a06805/mzl.junlfvwk.png");
-                q.put();                                    
+    def appendToRankHistory(self,appId,appType,rank):
+        q = model.RankHistory.all();
+        q.filter("appId", appId);
+        results = q.fetch(1);
+        
+        entry = results[0]
+        if len(results) == 0:
+            entry = model.RankHistory();
+            entry.appId = int(appId);
+            rank_decompressed = str(rank);
+        else:
+            rank_compressed = getattr(entry,appType);
+            rank_decompressed = zlib.decompress(rank_compressed);
+            rank_decompressed = str(rank) + rank_decompressed;
+        rank_compressed = zlib.compress(rank_decompressed);
+        setattr(entry,appType,rank_compressed);
+        entry.date = datetime.date.today();
+        entry.put();    
+#    def putDummyDataToDB(self,entity):
+#
+##            for index in range(0,100):
+##                dummyString = "dummy" + str(index);
+##
+##                dummyRank = random.randint(0,10);
+##                dummyDate = datetime.date(2013, 3, random.randint(1,31))
+##                q = entity(title=dummyString,rank=dummyRank,desc=dummyString,date=dummyDate,url="http://google.com",iconUrl="http://a2.mzstatic.com/us/r1000/077/Purple/v4/c2/4f/29/c24f29f4-8d24-b345-7609-085e15a06805/mzl.junlfvwk.png");
+##                q.put();  
+#            
+#            url = "https://itunes.apple.com/jp/rss/topfreeapplications/limit=10/xml";
+#            response = urllib2.urlopen(url)
+#            xmlInString = response.read();
+#            sourceEntry = model.SourceEntry(date=datetime.date.today())
+#            key = "topFree";
+#            model.AppDef.dbSourceModels.get(key)(model.AppDef(),sourceEntry,xmlInString);
+#            response.close();
+#            sourceEntry.put();
+                                  
         
 
 application = webapp.WSGIApplication([('/.*', MainPage)], debug=True)

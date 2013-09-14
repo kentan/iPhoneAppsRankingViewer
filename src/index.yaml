@@ -78,3 +78,8 @@ indexes:
   - name: rank
   - name: date
     direction: desc
+
+- kind: SourceEntry
+  properties:
+  - name: date
+  - name: rank

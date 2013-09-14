@@ -7,13 +7,19 @@ handlers:
 - url: /main.py
   script : main.py
 
-- url: /html
-  static_dir : html
+- url: /debug.py
+  script : debug.py
+  
+- url: /trans
+  script : chart_analyzer.py
+  
 
+- url: /AppRankingHistory
+  script : redirector.py
+  
 - url: /ViewDataCreator
   script : view_data_creator.py
  
-- url: .*
-  script : redirector.py
-  
+- url: /html
+  static_dir : html
   
