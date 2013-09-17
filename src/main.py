@@ -16,6 +16,8 @@ import datetime
 import model
 import random
 import zlib
+from model import RankHistory
+from datetime import timedelta;
 
 class MainPage(webapp.RequestHandler):
     def get(self):
@@ -31,16 +33,19 @@ class MainPage(webapp.RequestHandler):
                     response = urllib2.urlopen(url)
                     xmlInString = response.read();
                     dom = minidom.parseString(xmlInString)
-                    
                     nodeFeed = dom.childNodes[0];
                     rank = 0;
                     title = "";
                     url = "";
                     iconUrl = "";
+                    imid = "";
 #                    sourceEntry.topFree = xmlInString;
                     model.AppDef.dbSourceModels.get(key)(model.AppDef(),sourceEntry,xmlInString);
-                    
+      
                     for n in nodeFeed.childNodes:
+#                        print str(rank)
+                        if rank >= 51:
+                            break;
                         if isinstance(n,minidom.Element) and n.nodeName == "entry":
                             isTitleDone = False;
                             isDescDone = False;
@@ -53,6 +58,7 @@ class MainPage(webapp.RequestHandler):
                                         #self.response.out.write(n2.firstChild.data);
                                         title = n2.firstChild.data;
                                         isTitleDone = True;
+
                                     elif n2.nodeName == "im:image":
                                         iconUrl = n2.firstChild.data
                                         isIconUrlDone = True;
@@ -62,16 +68,19 @@ class MainPage(webapp.RequestHandler):
 #                                        iconUrl = iconGetter.getIcon(url);
 #                                        iconUrl = "http://localhost";#TODO
                                         imid = n2.attributes['im:id'].value;
-                                        rank_coded = model.rankCode[rank];
-                                        
-                                        self.appendToRankHistory(imid, key, rank_coded);
-                                        
                                         isUrlDone = True;
                                     elif n2.nodeName == "summary":
                                         desc = n2.firstChild.data;                                  
                                         isDescDone = True;
                                         
                                     elif isTitleDone and isUrlDone and isDescDone and isIconUrlDone:
+
+                                        rank_coded = model.rankCode[rank];
+                                        try:
+                                            self.appendToRankHistory(imid, title,key,rank_coded);
+                                        except Exception,e:
+                                            logging.error("error in append");
+                                            logging.error(e);
                                         break;
 
                             if(rank == 0):
@@ -89,6 +98,7 @@ class MainPage(webapp.RequestHandler):
                 except Exception,e:
                     logging.error("error in main")
                     logging.error(e);
+                    raise;
             sourceEntry.put();
             
 
@@ -133,8 +143,12 @@ class MainPage(webapp.RequestHandler):
 #                q = inst.all(keys_only=True)
 #                results = q.fetch(10000)
 #                db.delete(results);
-#                    self.response.out.write("deleted")
+#                self.response.out.write("deleted")
 #                self.response.out.write("delete comment-outed line for delete !!")
+#            en = RankHistory.all();
+#            results = en.fetch(10000)
+#            db.delete(results);
+            
     
     def putNewlyFoundTitleToDB(self,entity,title,url,iconUrl,date):
 
@@ -145,23 +159,37 @@ class MainPage(webapp.RequestHandler):
             newlyFoundApp = model.NewlyFoundApp(title = title,date = date,url=url,iconUrl=iconUrl);
             newlyFoundApp.put();
 
-    def appendToRankHistory(self,appId,appType,rank):
+    def appendToRankHistory(self,appId,appName,appType,rank):
         q = model.RankHistory.all();
-        q.filter("appId", appId);
+        q.filter("appId", int(appId));
         results = q.fetch(1);
-        
-        entry = results[0]
+        r = "";
         if len(results) == 0:
             entry = model.RankHistory();
             entry.appId = int(appId);
+            entry.appName = appName;
             rank_decompressed = str(rank);
         else:
+            entry = results[0]
             rank_compressed = getattr(entry,appType);
-            rank_decompressed = zlib.decompress(rank_compressed);
-            rank_decompressed = str(rank) + rank_decompressed;
+            if rank_compressed == None:
+                rank_decompressed = str(rank);
+            else:
+                lastUpdated = entry.lastUpdated;
+                d = datetime.date.today()-   timedelta(1);
+                while(lastUpdated < d):
+                    r += "P"
+                    d -=  timedelta(1);
+
+                    
+                rank_decompressed = zlib.decompress(rank_compressed);
+                rank_decompressed = r  + str(rank) + rank_decompressed;
+
+                    
+                    
         rank_compressed = zlib.compress(rank_decompressed);
         setattr(entry,appType,rank_compressed);
-        entry.date = datetime.date.today();
+        entry.lastUpdated = datetime.date.today();
         entry.put();    
 #    def putDummyDataToDB(self,entity):
 #

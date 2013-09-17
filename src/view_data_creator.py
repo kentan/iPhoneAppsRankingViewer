@@ -58,10 +58,11 @@ class ViewDataCreator(webapp.RequestHandler):
                 if entry.iconUrl == None or str(entry.iconUrl) == "http://localhost":
                     continue;
                 htmlString += '<li>'
-#                htmlString += '<a href="' + str(entry.url) + '" target="_blank">'
-                htmlString += '<a href="chart.html?appName=' + entry.title + '" target="_blank">'
+                htmlString += '<a href="#page_chart" rank="' + str(entry.rank + 1) + '" class=list_element_details>'
+#                htmlString += '<a href="#page_chart?rank=' + str(entry.rank + 1) + '" target="_blank">'
+#                htmlString += '<a href="chart.html?appName=' + entry.title + '&rank=' + str(entry.rank + 1) + '" target="_blank">'
                 htmlString += '<img src="' + str(entry.iconUrl) + '" />'
-                htmlString +=  '<p><h3 class="title">' + str(entry.rank + 1) +' . '+ entry.title +'</h3></p>'
+                htmlString +=  '<p><h3 class="title" url="' + entry.url + '" rank="' + str(entry.rank) + '">' + str(entry.rank + 1) +' . '+ entry.title +'</h3></p>'
                 htmlString +=  '<p class="desc">' + entry.desc + '</p>'
                 htmlString +=  '</a>'
                 htmlString += '</li>'
@@ -74,7 +75,9 @@ class ViewDataCreator(webapp.RequestHandler):
     def getChartData(self):
         searching_app_name = self.request.get("appName")
         q = model.RankHistory.all();
-        q.filter("appId", int(searching_app_name));
+#        q.filter("appId", int(searching_app_name));
+
+        q.filter("appName", searching_app_name);
         results = q.fetch(1);
         
         if len(results) == 0:

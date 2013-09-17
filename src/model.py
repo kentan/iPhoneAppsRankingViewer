@@ -142,7 +142,7 @@ class RankHistory(db.Model):
     new = db.BlobProperty();
     newFree = db.BlobProperty();    
     newPaid = db.BlobProperty();
-    date = db.DateProperty();
+    lastUpdated = db.DateProperty();
         
 rankCode = {0:"0",
             1:"1",

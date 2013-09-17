@@ -12,15 +12,30 @@ indexes:
 
 - kind: AppEntryNew
   properties:
+  - name: date
+  - name: rank
+
+- kind: AppEntryNew
+  properties:
   - name: rank
   - name: date
     direction: desc
 
 - kind: AppEntryNewFree
   properties:
+  - name: date
+  - name: rank
+
+- kind: AppEntryNewFree
+  properties:
   - name: rank
   - name: date
     direction: desc
+
+- kind: AppEntryNewPaid
+  properties:
+  - name: date
+  - name: rank
 
 - kind: AppEntryNewPaid
   properties:
@@ -63,15 +78,30 @@ indexes:
 
 - kind: AppEntryTopGrossingIpad
   properties:
+  - name: date
+  - name: rank
+
+- kind: AppEntryTopGrossingIpad
+  properties:
   - name: rank
   - name: date
     direction: desc
 
 - kind: AppEntryTopPaid
   properties:
+  - name: date
+  - name: rank
+
+- kind: AppEntryTopPaid
+  properties:
   - name: rank
   - name: date
     direction: desc
+
+- kind: AppEntryTopPaidIpad
+  properties:
+  - name: date
+  - name: rank
 
 - kind: AppEntryTopPaidIpad
   properties:

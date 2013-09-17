@@ -33,28 +33,34 @@ Apache license (http://www.apache.org/licenses/LICENSE-2.0.html)
 		      } 
 		      return vars; 
 		}
+
    		$(document).ready(function() {
    	   		queryStrings = getUrlVars();
-   	   		appName = queryStrings["appName"];
-			img = localStorage.getItem(appName+"_img");
-			desc = localStorage.getItem(appName+"_desc");
+//   	   		appName = queryStrings["appName"];
+   	   		rank = queryStrings["rank"];
+			img = sessionStorage.getItem(rank + "_img");
+			desc = sessionStorage.getItem(rank + "_desc");
+			appName = sessionStorage.getItem(rank + "_title"); 
 			$("#img").attr("src",img);
 			$("#desc").text(desc);
-   			getTableData();
+			$("#appName").text(appName);
+   			getTableData(appName);
 
 		});
 		  
 		google.load('visualization', '1', {packages: ['annotatedtimeline']});
 
 
-		function getTableData(){
+		function getTableData(appName){
+
             $.ajax({
      		   type: "GET",
      		   url: "/ViewDataCreator",
      		   dataType: 'json',
-			   data:"mode=getChartData&appName=391429128",
+//			   data:"mode=getChartData&appName=391429128",
+			   data:"mode=getChartData&appName=" + appName,
      		   success: function(msg){
-      		   alert(msg.topFree);
+      		   alert(msg.topGrossing);
       		    chart_data = msg.topFree + msg.topFree + msg.topFree;
 //            	drawVisualization(chart_data);
             	google.setOnLoadCallback(drawVisualization(chart_data));

@@ -7,8 +7,121 @@
 	<link rel='stylesheet' href='http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css' />
 	<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script>
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
     <title>App History</title>
     <script><!--
+  		code = {"0":1,"1":2,"2":3,"3":4,"4":5,"5":6,"6":7,"7":8,"8":9,"9":10,"a":11,
+  		  "b":12,"c":13,"d":14,"e":15,"f":16,"g":17,"h":18,"i":19,"j":20,"k":21,
+  		  "l":22,"m":23,"n":24,"o":25,"p":26,"q":27,"r":28,"s":29,"t":30,"u":31,
+  		  "v":32,"w":33,"x":34,"y":35,"z":36,"A":37,"B":38,"C":39,"D":40,"E":41,
+  		  "F":42,"G":43,"H":44,"I":45,"J":46,"K":47,"L":48,"M":49,"N":50,"O":51,
+  		  "P":52,"Q":53,"R":54,"S":55,"T":56,"U":57,"V":58,"W":59,"X":60,"Y":61,
+  		  "Z":62  
+    		};
+		google.load('visualization', '1', {packages: ['annotatedtimeline']});
+		var initialized = false;
+
+		function decode(codeString,index){
+			if(codeString == undefined){
+				return undefined;
+
+			}else{
+				a= code[codeString[index]];
+				return a;
+			}
+		}		
+		function generateRowsData(lineData){
+
+			var today = new Date();
+			/**			max = 0;
+
+			if(chart_data.topFree != undefined && max < chart_data.topFree.length) max = chart_data.topFree.length;
+			if(chart_data.topPaid != undefined && max < chart_data.topPaid.length) max = chart_data.topPaid.length;
+			if(chart_data.topGrossing != undefined && max < chart_data.topGrossing.length) max = chart_data.topGrossing.length;
+			if(chart_data.topFreeIpad != undefined && max < chart_data.topFreeIpad.length) max = chart_data.topFreeIpad.length;
+			if(chart_data.topPaidIpad != undefined && max < chart_data.topPaidIpad.length) max = chart_data.topPaidIpad.length;
+			if(chart_data.topGrossingIpad != undefined && max < chart_data.topGrossingIpad.length) max = chart_data.topGrossingIpad.length;
+			if(chart_data.new != undefined && max < chart_data.new.length) max = chart_data.new.length;
+**/
+			var theNumberOfLine = 0;
+			var duration = 0;
+			var done = false;
+			for(var key in lineData) {
+				theNumberOfLine++; 
+				if(!done){
+					duration = lineData[key].length
+					done = true;
+				}
+			}
+			
+			var data = new Array(duration);			
+			for(var i = 0; i < duration; i++){
+				var j = 0;
+				date = new Date(today.getFullYear(),today.getMonth(),today.getDate() - i);
+
+				var dataOnDate = new Array(theNumberOfLine + 1)
+				dataOnDate[j++] = date;
+				for(var key in lineData){
+					dataOnDate[j++] = decode(lineData[key],i);
+				}
+/**				d = [date,
+						decode(chart_data.topFree,i),
+						decode(chart_data.topPaid,i),
+					    decode(chart_data.topGrossing,i),
+					    decode(chart_data.topFreeIpad,i),
+
+
+					    decode(chart_data.topGrossingIpad,i),
+					    decode(chart_data.new,i),
+					    decode(chart_data.topPaidIpad,i),
+				];
+**/
+				data[i] = dataOnDate;		
+			}
+
+			
+			return data;
+	    }
+	    function drawVisualization(chart_data) {
+
+	      var data = new google.visualization.DataTable();
+	      data.addColumn('date', 'Date');
+	      lineData = {};
+	      if(chart_data.topFree != undefined){
+		      lineData["topFree"] = chart_data.topFree;
+		      data.addColumn('number', 'Top Free');
+	      }
+	      if(chart_data.topPaid != undefined){
+		      lineData["topPaid"] = chart_data.topPaid;
+		      data.addColumn('number', 'Top Paid');
+	      }
+	      if(chart_data.topGrossing != undefined){
+		      lineData["topGrossing"] = chart_data.topGrossing;
+	    	  data.addColumn('number', 'Top Sales');
+	      }
+	      if(chart_data.topFreeIpad != undefined){
+		      lineData["topFreeIpad"] = chart_data.topFreeIpad;
+		      data.addColumn('number', 'Top Free Ipad');
+	      }
+	      if(chart_data.topPaidIpad != undefined){
+		      lineData["topPaidIpad"] = chart_data.topPaidIpad;
+		      data.addColumn('number', 'Top Paid Ipad');
+	      }
+	      if(chart_data.topGrossingIpad != undefined){
+		      lineData["topGrossingIpad"] = chart_data.topGrossing;
+		      data.addColumn('number', 'Top Sales Ipad');
+	      }
+	      if(chart_data.new != undefined){
+		      lineData["new"] = chart_data.new;
+		      data.addColumn('number', 'New');
+	      }
+	      
+		  data.addRows(generateRowsData(lineData));
+
+	      var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
+	      		document.getElementById('visualization'));
+	      annotatedtimeline.draw(data, {'displayAnnotations': true});
+	    }  		
 	    $(document).ready(function() {
 		    var selectedTable = "topGrossing";
 			function getTableData(tableName){
@@ -40,13 +153,24 @@
 						$('#details_appDetails').append(msg);
 						$('#details_appDetails').trigger('create');
 
+
 						$('#details_appDetails > ul > li').each(function(index, domEle){
 							img = $(domEle).find("img").attr("src");
 							rankTitle = $(domEle).find('.title').text();
 							title = rankTitle.substring(4,rankTitle.length);
 							desc = $(domEle).find('.desc').text();
-							localStorage.setItem(title + "_img",img);
-							localStorage.setItem(title + "_desc",desc);
+							url = $(domEle).find(".title").attr("url");
+							sessionStorage.setItem((index + 1) +"_title",title);
+							sessionStorage.setItem((index + 1) +"_img",img);
+							sessionStorage.setItem((index + 1) +"_desc",desc);
+							sessionStorage.setItem((index + 1) +"_url",url);
+
+						});
+
+						$('.list_element_details').live("click",function(e){
+							var index = e.currentTarget.attributes["rank"].value;
+
+							sessionStorage.setItem("index",index);
 						});
 	         	   },
 	 		   	   error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -68,18 +192,6 @@
 				getAppDetails(selectedTable,selectedDate);
 				
 			});
-/**			
-			$('#page_details').bind('pageshow',function(e){
-	
-				console.log(e);
-				var queryStrings = getUrlVars();
-				var selectedDate = queryStrings["date"];
-				
-				$('#details_description > p').remove();
-				$('#details_description').append("<p>" + selectedDate + "のランキング("+ getTableText(selectedTable) + ")</p>");
-				getAppDetails(selectedTable,selectedDate);
-			});
-			**/
 			getTableData(selectedTable);
 
 			function getUrlVars()
@@ -96,7 +208,46 @@
 			function getTableText(tableName)
 			{
 				return  $("#tableList > option[value='" +  tableName + "']").text();
-			}	
+			}
+			function getChartData(appName){
+
+	            $.ajax({
+	     		   type: "GET",
+	     		   url: "/ViewDataCreator",
+	     		   dataType: 'json',
+				   data:"mode=getChartData&appName=" + appName,
+	     		   success: function(msg){
+
+	      		    chart_data = msg;
+	      		    if(initialized){
+		            	drawVisualization(chart_data);
+	      		    }else{
+	      		    	initialized = true;
+		            	google.setOnLoadCallback(drawVisualization(chart_data));
+	      		    }
+	         	   },
+	 		   	   error: function(XMLHttpRequest, textStatus, errorThrown){
+		      			 alert("error" + textStatus + errorThrown);
+	     		   }
+		     	});
+
+		  	}
+	   		$("#page_chart").bind("pageshow",function() {
+
+	   	   		rank = sessionStorage.getItem("index");
+
+				img = sessionStorage.getItem(rank + "_img");
+				desc = sessionStorage.getItem(rank + "_desc");
+				appName = sessionStorage.getItem(rank + "_title"); 
+				url = sessionStorage.getItem(rank + "_url"); 
+				$("#img").attr("src",img);
+				$("#desc").text(desc);
+				$("#appName").text(appName);
+				$("#appUrl").attr("href",url);
+
+				getChartData(appName);
+
+			});	
 	    });
         
     --></script>
@@ -135,6 +286,20 @@
 			<div data-role="content">
 				<div id="details_description"></div>
 				<div id="details_appDetails"></div>
+			</div>
+		</div>
+		<div data-role="page" id="page_chart">
+			<div data-role="header" data-theme="f"></div>
+			<div data-role="content">
+			<div id="visualization" style="width: 600px; height: 300px;"></div>
+			<div class="article">
+			
+				<p><img id="img" src=" width="50px" height="50px"></img></p>
+	            <a id ="appUrl" href=""><h2 id="appName"></h2></a>
+	
+	            <p id="desc"></p>
+			
+			</div>
 			</div>
 		</div>		
   </body>
