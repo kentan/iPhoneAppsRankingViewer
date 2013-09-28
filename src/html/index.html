@@ -15,8 +15,8 @@
   		  "l":22,"m":23,"n":24,"o":25,"p":26,"q":27,"r":28,"s":29,"t":30,"u":31,
   		  "v":32,"w":33,"x":34,"y":35,"z":36,"A":37,"B":38,"C":39,"D":40,"E":41,
   		  "F":42,"G":43,"H":44,"I":45,"J":46,"K":47,"L":48,"M":49,"N":50,"O":51,
-  		  "P":52,"Q":53,"R":54,"S":55,"T":56,"U":57,"V":58,"W":59,"X":60,"Y":61,
-  		  "Z":62  
+  		  "P":null,"Q":null,"R":null,"S":null,"T":null,"U":null,"V":null,"W":null,"X":null,"Y":null,
+  		  "Z":null  
     		};
 		google.load('visualization', '1', {packages: ['annotatedtimeline']});
 		var initialized = false;
@@ -30,27 +30,17 @@
 				return a;
 			}
 		}		
-		function generateRowsData(lineData){
+		function generateRowsData(lineData,lastUpdated){
 
-			var today = new Date();
-			/**			max = 0;
-
-			if(chart_data.topFree != undefined && max < chart_data.topFree.length) max = chart_data.topFree.length;
-			if(chart_data.topPaid != undefined && max < chart_data.topPaid.length) max = chart_data.topPaid.length;
-			if(chart_data.topGrossing != undefined && max < chart_data.topGrossing.length) max = chart_data.topGrossing.length;
-			if(chart_data.topFreeIpad != undefined && max < chart_data.topFreeIpad.length) max = chart_data.topFreeIpad.length;
-			if(chart_data.topPaidIpad != undefined && max < chart_data.topPaidIpad.length) max = chart_data.topPaidIpad.length;
-			if(chart_data.topGrossingIpad != undefined && max < chart_data.topGrossingIpad.length) max = chart_data.topGrossingIpad.length;
-			if(chart_data.new != undefined && max < chart_data.new.length) max = chart_data.new.length;
-**/
+			var today = new Date(lastUpdated);
 			var theNumberOfLine = 0;
 			var duration = 0;
-			var done = false;
+
 			for(var key in lineData) {
 				theNumberOfLine++; 
-				if(!done){
+
+				if(duration < lineData[key].length){
 					duration = lineData[key].length
-					done = true;
 				}
 			}
 			
@@ -62,20 +52,13 @@
 				var dataOnDate = new Array(theNumberOfLine + 1)
 				dataOnDate[j++] = date;
 				for(var key in lineData){
-					dataOnDate[j++] = decode(lineData[key],i);
+//					$("#chartTimeLine").append(key + "</br>");
+					dataOnDate[j] = decode(lineData[key],i);
+//					$("#chartTimeLine").append(dataOnDate[j] + "</br>");
+					j++;	
 				}
-/**				d = [date,
-						decode(chart_data.topFree,i),
-						decode(chart_data.topPaid,i),
-					    decode(chart_data.topGrossing,i),
-					    decode(chart_data.topFreeIpad,i),
 
 
-					    decode(chart_data.topGrossingIpad,i),
-					    decode(chart_data.new,i),
-					    decode(chart_data.topPaidIpad,i),
-				];
-**/
 				data[i] = dataOnDate;		
 			}
 
@@ -108,7 +91,7 @@
 		      data.addColumn('number', 'Top Paid Ipad');
 	      }
 	      if(chart_data.topGrossingIpad != undefined){
-		      lineData["topGrossingIpad"] = chart_data.topGrossing;
+		      lineData["topGrossingIpad"] = chart_data.topGrossingIpad;
 		      data.addColumn('number', 'Top Sales Ipad');
 	      }
 	      if(chart_data.new != undefined){
@@ -116,7 +99,7 @@
 		      data.addColumn('number', 'New');
 	      }
 	      
-		  data.addRows(generateRowsData(lineData));
+		  data.addRows(generateRowsData(lineData,chart_data.lastUpdated));
 
 	      var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
 	      		document.getElementById('visualization'));
@@ -171,6 +154,7 @@
 							var index = e.currentTarget.attributes["rank"].value;
 
 							sessionStorage.setItem("index",index);
+							setAppInfo();
 						});
 	         	   },
 	 		   	   error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -210,7 +194,7 @@
 				return  $("#tableList > option[value='" +  tableName + "']").text();
 			}
 			function getChartData(appName){
-
+				$("#chartTimeLine").text("");
 	            $.ajax({
 	     		   type: "GET",
 	     		   url: "/ViewDataCreator",
@@ -219,7 +203,21 @@
 	     		   success: function(msg){
 
 	      		    chart_data = msg;
-	      		    if(initialized){
+
+	      		    if(chart_data == null || chart_data.NONE != undefined){
+		      		    return ;
+	      		    }
+/**	      		    
+					$("#chartTimeLine").append(chart_data.topFree + "</br>");
+					$("#chartTimeLine").append(chart_data.topGrossing + "</br>");
+					$("#chartTimeLine").append(chart_data.topPaid + "</br>");
+					$("#chartTimeLine").append(chart_data.topFreeIpad + "</br>");
+					$("#chartTimeLine").append(chart_data.topGrossingIpad + "</br>");
+					$("#chartTimeLine").append(chart_data.topPaidIpad + "</br>");
+					$("#chartTimeLine").append(chart_data.new + "</br>");
+					$("#chartTimeLine").append(chart_data.lastUpdated + "</br>");
+**/					
+					if(initialized){
 		            	drawVisualization(chart_data);
 	      		    }else{
 	      		    	initialized = true;
@@ -232,8 +230,7 @@
 		     	});
 
 		  	}
-	   		$("#page_chart").bind("pageshow",function() {
-
+		  	function setAppInfo(){
 	   	   		rank = sessionStorage.getItem("index");
 
 				img = sessionStorage.getItem(rank + "_img");
@@ -246,7 +243,10 @@
 				$("#appUrl").attr("href",url);
 
 				getChartData(appName);
-
+		  	}
+		  				  	
+	   		$("#page_chart").bind("pageshow",function() {
+//				setAppInfo();
 			});	
 	    });
         
@@ -298,7 +298,7 @@
 	            <a id ="appUrl" href=""><h2 id="appName"></h2></a>
 	
 	            <p id="desc"></p>
-			
+				<p id="chartTimeLine"></p>
 			</div>
 			</div>
 		</div>		
