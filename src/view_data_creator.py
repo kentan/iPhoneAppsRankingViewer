@@ -71,31 +71,61 @@ class ViewDataCreator(webapp.RequestHandler):
             self.response.out.write(htmlString);  
         elif mode == "getChartData":
             self.getChartData();
-                        
+ 
     def getChartData(self):
         searching_app_name = self.request.get("appName")
-        q = model.RankHistory.all();
-#        q.filter("appId", int(searching_app_name));
-
-        q.filter("appName", searching_app_name);
-        results = q.fetch(1);
-        
-        if len(results) == 0:
-            return "{}";
-        
-        entry = results[0];
-        
+#        self.response.out.write('{"TITLE":"'+searching_app_name+'"}');
+#        return;
         rv = '{';
+        lastUpdated ="";
         for key in model.AppDef.urls.keys():
-            compressed = getattr(entry,key);
-            if compressed == None:
+            q = model.RankHistory.all();
+    
+            q.filter("appName", searching_app_name.strip());
+            q.filter("appType",key);
+            results = q.fetch(1);
+            
+            if len(results) == 0:
                 continue;
-            data = zlib.decompress(compressed);
- 
+            
+            entry = results[0];
+            lastUpdated = entry.lastUpdated;
+            data = zlib.decompress(entry.rank);
             rv += ('"' + key + '":"' + data + '",');
+            
+        rv += ('"lastUpdated":"' + str(lastUpdated) + '",');
         rv = rv[0:len(rv) - 1];
         rv += "}"
-        self.response.out.write(rv); 
+        self.response.out.write(rv);                        
+#    def getChartData(self):
+#        searching_app_name = self.request.get("appName")
+##        self.response.out.write('{"TITLE":"'+searching_app_name+'"}');
+##        return;
+#
+#        q = model.RankHistory.all();
+#
+##        q.filter("appId", int(searching_app_name));
+#
+#        q.filter("appName", searching_app_name.strip());
+#        results = q.fetch(1);
+#        
+#        if len(results) == 0:
+#            self.response.out.write('{"NONE":0}');
+#            return;
+#        
+#        entry = results[0];
+#        
+#        rv = '{';
+#        for key in model.AppDef.urls.keys():
+#            compressed = getattr(entry,key);
+#            if compressed == None:
+#                continue;
+#            data = zlib.decompress(compressed);
+# 
+#            rv += ('"' + key + '":"' + data + '",');
+#        rv = rv[0:len(rv) - 1];
+#        rv += "}"
+#        self.response.out.write(rv); 
 
 
 application = webapp.WSGIApplication([('/.*', ViewDataCreator)], debug=True)

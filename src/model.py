@@ -15,7 +15,7 @@ class SourceEntry(db.Model):
     
 class AppEntry(db.Model):
     title = db.StringProperty(required=True)
-    desc = db.TextProperty(required=True)
+    desc = db.TextProperty()
     rank = db.IntegerProperty(required=True);
     url = db.URLProperty();
     iconUrl = db.URLProperty();
@@ -129,20 +129,25 @@ class AppDef:
      newPaid:setSourceToNewPaid
      }
 
-
 class RankHistory(db.Model):
     appId = db.IntegerProperty();
     appName = db.StringProperty();
-    topFree = db.BlobProperty();
-    topPaid = db.BlobProperty();
-    topGrossing = db.BlobProperty();
-    topFreeIpad = db.BlobProperty();
-    topPaidIpad = db.BlobProperty();
-    topGrossingIpad = db.BlobProperty();
-    new = db.BlobProperty();
-    newFree = db.BlobProperty();    
-    newPaid = db.BlobProperty();
+    appType = db.StringProperty();
+    rank = db.BlobProperty();
     lastUpdated = db.DateProperty();
+#class RankHistory(db.Model):
+#    appId = db.IntegerProperty();
+#    appName = db.StringProperty();
+#    topFree = db.BlobProperty();
+#    topPaid = db.BlobProperty();
+#    topGrossing = db.BlobProperty();
+#    topFreeIpad = db.BlobProperty();
+#    topPaidIpad = db.BlobProperty();
+#    topGrossingIpad = db.BlobProperty();
+#    new = db.BlobProperty();
+#    newFree = db.BlobProperty();    
+#    newPaid = db.BlobProperty();
+#    lastUpdated = db.DateProperty();
         
 rankCode = {0:"0",
             1:"1",
