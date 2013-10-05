@@ -15,6 +15,11 @@ import main;
 
 class MainPage(webapp.RequestHandler):
     def deleteAll(self):
+        q = model.RankHistory.all();
+        results = q.fetch(10000)
+        db.delete(results);
+        
+        return ;
         for inst in model.AppDef.dbModels.values():
             q = inst.all(keys_only=True)
             results = q.fetch(10000)
@@ -170,15 +175,15 @@ class MainPage(webapp.RequestHandler):
                                     break;
 
 
-#                        if(rank == 0):
-#                            # put rank0 to the history entities
-#                            appHistoryEntry = appEntryHistoryInst(title = title,date = recodedDate,url = url,iconUrl = iconUrl);
-#                            appHistoryEntry.put();
-#                            # if this title is newly found,then put this to newlyfound entity
-#                            m.putNewlyFoundTitleToDB(appEntryHistoryInst, title, url,iconUrl,recodedDate)
+                        if(rank == 0):
+                            # put rank0 to the history entities
+                            appHistoryEntry = appEntryHistoryInst(title = title,date = recodedDate,url = url,iconUrl = iconUrl);
+                            appHistoryEntry.put();
+                            # if this title is newly found,then put this to newlyfound entity
+                            m.putNewlyFoundTitleToDB(appEntryHistoryInst, title, url,iconUrl,recodedDate)
                             
-#                        appEntry = AppEntryInst(title = title,desc = _desc,rank = rank,date = recodedDate,url=url,iconUrl=iconUrl,source = n);
-#                        appEntry.put();
+                        appEntry = AppEntryInst(title = title,desc = _desc,rank = rank,date = recodedDate,url=url,iconUrl=iconUrl,source = n);
+                        appEntry.put();
                         rank += 1;    
 
 
@@ -242,7 +247,7 @@ class MainPage(webapp.RequestHandler):
                     sourceEntry.put();
                     break;
                 
-    def getSourceFromCloud(self,appType):
+    def getSourceEntryFromColud(self,appType):
         today = datetime.date.today();
 
         diff =  self.request.get("diff")
@@ -271,8 +276,8 @@ class MainPage(webapp.RequestHandler):
         mode = self.request.get("mode")
 #
         if mode == "putSouceFromCloud":
-            for key in model.AppDef.urls.keys():
-                pass;
+            pass;
+#            for key in model.AppDef.urls.keys():
 #                self.putSouceFromCloud(key);
         elif mode == "getSourceFromCloud":
             appType =  self.request.get("appType")
@@ -281,7 +286,10 @@ class MainPage(webapp.RequestHandler):
             pass;
 #            self.deleteAll();
         elif mode == "restore":
-            self.restoreDataFromSourceEntry();
+            pass;
+#            self.restoreDataFromSourceEntry();
             
 application = webapp.WSGIApplication([('/.*', MainPage)], debug=True)
 run_wsgi_app(application)
+
+

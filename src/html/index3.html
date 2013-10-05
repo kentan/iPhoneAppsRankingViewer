@@ -18,8 +18,9 @@
   		  "P":null,"Q":null,"R":null,"S":null,"T":null,"U":null,"V":null,"W":null,"X":null,"Y":null,
   		  "Z":null  
     		};
-		google.load("visualization", "1", {packages:["corechart"]});
-		var initialized = false;
+
+		google.load('visualization', '1', {packages: ['annotatedtimeline']});
+    	var initialized = false;
 
 		function decode(codeString,index){
 			if(codeString == undefined){
@@ -101,16 +102,9 @@
 	      
 		  data.addRows(generateRowsData(lineData,chart_data.lastUpdated));
 
-          var options = {
-        		width: document.width -10, 
-        		height: 300,
-        		legend: {position: "bottom"},
-        		chartArea:{left:20,top:20},
-               	curveType: "function"
-          };
-
-	      var chart = new google.visualization.LineChart(document.getElementById('visualization'));
-	      chart.draw(data,options);
+	      var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
+	      		document.getElementById('visualization'));
+	      annotatedtimeline.draw(data, {'displayAnnotations': true});
 	    }  		
 	    $(document).ready(function() {
 		    var selectedTable = "topGrossing";

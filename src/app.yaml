@@ -7,6 +7,9 @@ handlers:
 - url: /main.py
   script : main.py
 
+- url: /debug.py
+  script : debug.py
+  
 - url: /html
   static_dir : html
 
