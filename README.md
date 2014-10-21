@@ -1,6 +1,6 @@
 #iPhoneAppsRankingViewer
 
-<img title="iPhoneAppsRankingViewer" src="https://raw.githubusercontent.com/kentan/iPhoneAppsRankingViewer/master/apphistory1.png" height="400" width="500" />
+<img title="iPhoneAppsRankingViewer" src="https://raw.githubusercontent.com/kentan/iPhoneAppsRankingViewer/master/apphistory1.png"  />
 
 
 Google apps engine application that shows iPhone app ranking history.
